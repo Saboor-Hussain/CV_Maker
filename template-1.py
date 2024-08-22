@@ -137,15 +137,17 @@ def save_cv():
     else:
         print("Invalid file type")
 
-# Call all the functions to create the CV
-add_header(canvas)
-add_experience(canvas)
-add_education(canvas)
-add_skills(canvas)
-add_languages(canvas)
 
-# Add save button
-save_button = tk.Button(window, text="Save CV", command=save_cv)
-save_button.place(x=80, y=900)
+def template_1():
+    # Call all the functions to create the CV
+    add_header(canvas)
+    add_experience(canvas)
+    add_education(canvas)
+    add_skills(canvas)
+    add_languages(canvas)
 
-window.mainloop()
+    # Add save button
+    save_button = tk.Button(window, text="Save CV", command=save_cv)
+    save_button.place(x=80, y=900)
+
+    window.mainloop()

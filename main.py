@@ -1,129 +1,308 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
-from PIL import Image, ImageDraw, ImageFont
+import random
+import importlib
 
-# Function to generate resume image
-def generate_resume(template_choice, user_data):
-    # Load the appropriate template
-    if template_choice == 1:
-        template = Image.open("template-1.png")  # Placeholder image path
-    elif template_choice == 2:
-        template = Image.open("template-2.png")  # Placeholder image path
-    else:
-        template = Image.open("template-3.png")  # Placeholder image path
-
-    draw = ImageDraw.Draw(template)
-    font = ImageFont.truetype("arial.ttf", 20)  # Placeholder font path
-
-    # Draw the user data on the template
-    draw.text((50, 50), f"Name: {user_data['name']}", font=font, fill="black")
-    draw.text((50, 100), f"Email: {user_data['email']}", font=font, fill="black")
-    draw.text((50, 150), f"Phone: {user_data['phone']}", font=font, fill="black")
-    draw.text((50, 200), f"Address: {user_data['address']}", font=font, fill="black")
-    draw.text((50, 250), f"Education 1: {user_data['education1']}", font=font, fill="black")
-    draw.text((50, 300), f"Education 2: {user_data['education2']}", font=font, fill="black")
-    draw.text((50, 350), f"Experience: {user_data['experience']}", font=font, fill="black")
-    draw.text((50, 400), f"Skills: {user_data['skills']}", font=font, fill="black")
-
-    return template
-
-# Function to save resume
-def save_resume(image, file_type):
-    file_path = tk.filedialog.asksaveasfilename(defaultextension=file_type, filetypes=[(f"{file_type.upper()} file", f"*.{file_type}")])
-    if file_path:
-        image.save(file_path)
-
-# Function to preview the resume
-def preview_resume():
-    user_data = {
-        "name": name_entry.get(),
-        "email": email_entry.get(),
-        "phone": phone_entry.get(),
-        "address": address_entry.get(),
-        "education1": edu1_entry.get(),
-        "education2": edu2_entry.get(),
-        "experience": exp_entry.get(),
-        "skills": skills_entry.get(),
-    }
-    
-    resume_image = generate_resume(template_var.get(), user_data)
-    resume_image.show()
-
-    # Save button
-    save_button = ttk.Button(root, text="Save as JPG", command=lambda: save_resume(resume_image, "jpg"))
-    save_button.pack(pady=10)
-    save_button = ttk.Button(root, text="Save as PNG", command=lambda: save_resume(resume_image, "png"))
-    save_button.pack(pady=10)
-    save_button = ttk.Button(root, text="Save as PDF", command=lambda: save_resume(resume_image, "pdf"))
-    save_button.pack(pady=10)
-
-# GUI setup
 root = tk.Tk()
-root.title("Resume Maker")
-root.geometry("500x600")
+root.title("CV Maker")
 
-# Template selection
-template_label = ttk.Label(root, text="Select Template:")
-template_label.pack(pady=10)
-template_var = tk.IntVar()
-template1_radio = ttk.Radiobutton(root, text="Template 1", variable=template_var, value=1)
-template1_radio.pack()
-template2_radio = ttk.Radiobutton(root, text="Template 2", variable=template_var, value=2)
-template2_radio.pack()
-template3_radio = ttk.Radiobutton(root, text="Template 3", variable=template_var, value=3)
-template3_radio.pack()
+# Define user data storage
+user_data = {}
 
-# Personal Information
-name_label = ttk.Label(root, text="First Name:")
-name_label.pack(pady=5)
-name_entry = ttk.Entry(root)
-name_entry.pack()
+# Show the given frame
+def show_frame(frame):
+    frame.tkraise()
 
-last_name_label = ttk.Label(root, text="Last Name (Optional):")
-last_name_label.pack(pady=5)
-last_name_entry = ttk.Entry(root)
-last_name_entry.pack()
+# Section 1: Greeting Window
+def section_1():
+    global frame1
+    frame1 = tk.Frame(root, width=900, height=600, bg="white")
+    frame1.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+    
+    title = tk.Label(frame1, text="CV MAKER", font=("Arial", 24, "bold"), bg="white")
+    title.pack(pady=20)
+    
+    motive = tk.Label(frame1, text="Create Your CV Instantly.", font=("Arial", 16), bg="white")
+    motive.pack(pady=10)
+    
+    message = tk.Label(frame1, text="In the modern world, create your CV by clicking the button below to get started.", 
+                       font=("Arial", 14), bg="white", wraplength=800, justify="center")
+    message.pack(pady=50)
+    
+    start_button = tk.Button(frame1, text="Get Started", font=("Arial", 14), command=lambda: show_frame(frame2))
+    start_button.pack(pady=30)
+    
+    frame1.grid(row=0, column=0, sticky="nsew")
 
-email_label = ttk.Label(root, text="Email:")
-email_label.pack(pady=5)
-email_entry = ttk.Entry(root)
-email_entry.pack()
+# Section 2: Template Selection
+def section_2():
+    global frame2
+    frame2 = tk.Frame(root, width=900, height=600, bg="white")
+    frame2.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+    
+    title = tk.Label(frame2, text="CV MAKER", font=("Arial", 24, "bold"), bg="white")
+    title.pack(pady=20)
+    
+    motive = tk.Label(frame2, text="Create Your CV Instantly.", font=("Arial", 16), bg="white")
+    motive.pack(pady=10)
+    
+    template_label = tk.Label(frame2, text="Choose Your Template", font=("Arial", 14), bg="white")
+    template_label.pack(pady=20)
+    
+    template_frame = tk.Frame(frame2, bg="white")
+    template_frame.pack(pady=20)
+    
+    template1 = tk.Button(template_frame, text="Template 1", font=("Arial", 14), width=20, height=10, command=lambda: select_template(1))
+    template2 = tk.Button(template_frame, text="Template 2", font=("Arial", 14), width=20, height=10, command=lambda: select_template(2))
+    template3 = tk.Button(template_frame, text="Template 3", font=("Arial", 14), width=20, height=10, command=lambda: select_template(3))
+    
+    template1.pack(side="left", padx=10)
+    template2.pack(side="left", padx=10)
+    template3.pack(side="left", padx=10)
+    
+    frame2.grid(row=0, column=0, sticky="nsew")
 
-phone_label = ttk.Label(root, text="Phone Number:")
-phone_label.pack(pady=5)
-phone_entry = ttk.Entry(root)
-phone_entry.pack()
+# Template selection handler
+def select_template(template_number):
+    user_data["template"] = template_number
+    show_frame(frame3)
 
-address_label = ttk.Label(root, text="Address:")
-address_label.pack(pady=5)
-address_entry = ttk.Entry(root)
-address_entry.pack()
+# Section 3: Personal Information
+def section_3():
+    global frame3, entry_name, entry_email, entry_phone, entry_website, entry_job_title
+    frame3 = tk.Frame(root, width=900, height=600, bg="white")
+    frame3.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+    
+    title = tk.Label(frame3, text="CV MAKER", font=("Arial", 24, "bold"), bg="white")
+    title.pack(pady=20)
+    
+    motive = tk.Label(frame3, text="Create Your CV Instantly.", font=("Arial", 16), bg="white")
+    motive.pack(pady=10)
+    
+    label_name = tk.Label(frame3, text="Full Name:", font=("Arial", 14), bg="white")
+    label_name.pack(pady=5)
+    entry_name = tk.Entry(frame3, width=40, font=("Arial", 14))
+    entry_name.pack(pady=5)
+    
+    label_email = tk.Label(frame3, text="Email:", font=("Arial", 14), bg="white")
+    label_email.pack(pady=5)
+    entry_email = tk.Entry(frame3, width=40, font=("Arial", 14))
+    entry_email.pack(pady=5)
+    
+    label_phone = tk.Label(frame3, text="Phone Number:", font=("Arial", 14), bg="white")
+    label_phone.pack(pady=5)
+    entry_phone = tk.Entry(frame3, width=40, font=("Arial", 14))
+    entry_phone.pack(pady=5)
+    
+    label_website = tk.Label(frame3, text="Website / LinkedIn URL:", font=("Arial", 14), bg="white")
+    label_website.pack(pady=5)
+    entry_website = tk.Entry(frame3, width=40, font=("Arial", 14))
+    entry_website.pack(pady=5)
+    
+    label_job_title = tk.Label(frame3, text="Current Job Title:", font=("Arial", 14), bg="white")
+    label_job_title.pack(pady=5)
+    entry_job_title = tk.Entry(frame3, width=40, font=("Arial", 14))
+    entry_job_title.pack(pady=5)
+    
+    next_button = tk.Button(frame3, text="Next", font=("Arial", 14), command=collect_personal_info)
+    next_button.pack(pady=30)
+    
+    frame3.grid(row=0, column=0, sticky="nsew")
 
-# Educational Information
-edu1_label = ttk.Label(root, text="Last Education (Institution - Duration):")
-edu1_label.pack(pady=5)
-edu1_entry = ttk.Entry(root)
-edu1_entry.pack()
+def collect_personal_info():
+    user_data["personal_info"] = {
+        "name": entry_name.get(),
+        "email": entry_email.get(),
+        "phone": entry_phone.get(),
+        "website": entry_website.get(),
+        "job_title": entry_job_title.get()
+    }
+    show_frame(frame4)
 
-edu2_label = ttk.Label(root, text="Second Last Education (Institution - Duration):")
-edu2_label.pack(pady=5)
-edu2_entry = ttk.Entry(root)
-edu2_entry.pack()
+# Section 4: Education
+def section_4():
+    global frame4, entry_education, entry_school, entry_dates
+    frame4 = tk.Frame(root, width=900, height=600, bg="white")
+    frame4.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+    
+    title = tk.Label(frame4, text="CV MAKER", font=("Arial", 24, "bold"), bg="white")
+    title.pack(pady=20)
+    
+    motive = tk.Label(frame4, text="Create Your CV Instantly.", font=("Arial", 16), bg="white")
+    motive.pack(pady=10)
+    
+    label_education = tk.Label(frame4, text="Education:", font=("Arial", 14), bg="white")
+    label_education.pack(pady=5)
+    entry_education = tk.Entry(frame4, width=40, font=("Arial", 14))
+    entry_education.pack(pady=5)
+    
+    label_school = tk.Label(frame4, text="School/University:", font=("Arial", 14), bg="white")
+    label_school.pack(pady=5)
+    entry_school = tk.Entry(frame4, width=40, font=("Arial", 14))
+    entry_school.pack(pady=5)
+    
+    label_dates = tk.Label(frame4, text="Date (format: StartMonth Year - EndMonth Year):", font=("Arial", 14), bg="white")
+    label_dates.pack(pady=5)
+    entry_dates = tk.Entry(frame4, width=40, font=("Arial", 14))
+    entry_dates.pack(pady=5)
+    
+    next_button = tk.Button(frame4, text="Next", font=("Arial", 14), command=collect_education_info)
+    next_button.pack(pady=30)
+    
+    frame4.grid(row=0, column=0, sticky="nsew")
 
-# Professional Experience
-exp_label = ttk.Label(root, text="Experience (Title - Period - Description):")
-exp_label.pack(pady=5)
-exp_entry = ttk.Entry(root)
-exp_entry.pack()
+def collect_education_info():
+    user_data["education"] = {
+        "education": entry_education.get(),
+        "school": entry_school.get(),
+        "dates": entry_dates.get()
+    }
+    show_frame(frame5)
 
-# Skills
-skills_label = ttk.Label(root, text="Skills (Comma separated, max 5):")
-skills_label.pack(pady=5)
-skills_entry = ttk.Entry(root)
-skills_entry.pack()
+# Section 5: Skills
+def section_5():
+    global frame5, skill_entries
+    frame5 = tk.Frame(root, width=900, height=600, bg="white")
+    frame5.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+    
+    title = tk.Label(frame5, text="CV MAKER", font=("Arial", 24, "bold"), bg="white")
+    title.pack(pady=20)
+    
+    motive = tk.Label(frame5, text="Create Your CV Instantly.", font=("Arial", 16), bg="white")
+    motive.pack(pady=10)
+    
+    skill_entries = []
+    for i in range(5):
+        label_skill = tk.Label(frame5, text=f"Skill {i+1}:", font=("Arial", 14), bg="white")
+        label_skill.pack(pady=5)
+        entry_skill = tk.Entry(frame5, width=40, font=("Arial", 14))
+        entry_skill.pack(pady=5)
+        skill_entries.append(entry_skill)
+    
+    next_button = tk.Button(frame5, text="Next", font=("Arial", 14), command=collect_skills_info)
+    next_button.pack(pady=30)
+    
+    frame5.grid(row=0, column=0, sticky="nsew")
 
-# Preview and Download
-preview_button = ttk.Button(root, text="Preview Resume", command=preview_resume)
-preview_button.pack(pady=20)
+def collect_skills_info():
+    user_data["skills"] = [entry.get() for entry in skill_entries]
+    if user_data["template"] in [1, 3]:
+        show_frame(frame6)  # Move to Section 6 (Languages) if template 1 or 3 is selected
+    else:
+        process_cv()  # Otherwise, directly process the CV
 
-root.mainloop()
+# Section 6: Languages
+def section_6():
+    global frame6, language_entries
+    frame6 = tk.Frame(root, width=900, height=600, bg="white")
+    frame6.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+    
+    title = tk.Label(frame6, text="CV MAKER", font=("Arial", 24, "bold"), bg="white")
+    title.pack(pady=20)
+    
+    motive = tk.Label(frame6, text="Create Your CV Instantly.", font=("Arial", 16), bg="white")
+    motive.pack(pady=10)
+    
+    language_entries = []
+    for i in range(3):
+        label_language = tk.Label(frame6, text=f"Language {i+1}:", font=("Arial", 14), bg="white")
+        label_language.pack(pady=5)
+        entry_language = tk.Entry(frame6, width=40, font=("Arial", 14))
+        entry_language.pack(pady=5)
+        language_entries.append(entry_language)
+    
+    proceed_button = tk.Button(frame6, text="Proceed", font=("Arial", 14), command=process_cv)
+    proceed_button.pack(pady=30)
+    
+    frame6.grid(row=0, column=0, sticky="nsew")
+
+def create_loader_frame():
+    global frame_loader, progress, message_label
+    frame_loader = tk.Frame(root, width=900, height=600, bg="white")
+    frame_loader.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+    
+    title = tk.Label(frame_loader, text="CV MAKER", font=("Arial", 24, "bold"), bg="white")
+    title.pack(pady=20)
+    
+    motive = tk.Label(frame_loader, text="Processing Your Information...", font=("Arial", 16), bg="white")
+    motive.pack(pady=10)
+    
+    message_label = tk.Label(frame_loader, text="", font=("Arial", 14), bg="white")
+    message_label.pack(pady=10)
+    
+    progress = ttk.Progressbar(frame_loader, orient="horizontal", length=800, mode="determinate")
+    progress.pack(pady=20)
+    
+    frame_loader.grid(row=0, column=0, sticky="nsew")
+
+# Update the loader message and progress bar
+def update_loader_message(messages, index=0):
+    if index < len(messages):
+        message_label.config(text=messages[index])
+        root.update()
+        
+        # Determine the delay based on the message
+        delay = 5000 if messages[index] == "Creating your CV" else random.randint(2000, 4000)
+        
+        progress_step = 100 / len(messages)
+        progress['value'] = progress_step * (index + 1)
+        root.update()
+        
+        root.after(delay, update_loader_message, messages, index + 1)
+    else:
+        root.after(1000, move_to_next_section)
+
+# Move to the next section after processing
+def move_to_next_section():
+    frame_loader.destroy()
+    if user_data["template"] in [1, 3]:
+        show_frame(frame6)  # Show Section 6 if template 1 or 3 is selected
+    else:
+        process_cv_final()  # Replace with the function to handle the finalization
+
+def process_cv():
+    create_loader_frame()
+    
+    messages = ["Processing Inputs", "Analyzing Data", "Creating your CV", "Almost There"]
+    
+    # Calculate the remaining time to ensure total time is between 10 to 15 seconds
+    total_processing_time = random.randint(10000, 15000)  # Total time between 10 and 15 seconds
+    remaining_time = total_processing_time - 5000  # Subtract 5 seconds for the "Creating your CV" message
+    
+    # Update the loader messages
+    update_loader_message(messages)
+    
+    # Ensure the total time is respected by setting a final delay
+    root.after(remaining_time, move_to_next_section)
+
+def process_cv_final():
+    # Finalize the CV processing or show completion
+    print(f"Finalized CV with user data: {user_data}")
+    # Open the corresponding template file
+    template_file = f"template_{user_data['template']}.py"
+    try:
+        module = importlib.import_module(template_file.replace('.py', ''))
+        # Call a function in the module if needed, e.g., module.generate_cv(user_data)
+        # For now, just print a message
+        print(f"Loaded and processed template: {template_file}")
+    except ModuleNotFoundError:
+        print(f"Template file {template_file} not found.")
+    
+    # Show completion message
+    messagebox.showinfo("CV Maker", "Your CV has been created successfully!")
+    root.quit()  # Close the application
+
+if __name__ == "__main__":
+    # Initialize frames
+    section_1()
+    section_2()
+    section_3()
+    section_4()
+    section_5()
+    section_6()
+    
+    # Set the initial frame
+    show_frame(frame1)
+    
+    # Start the Tkinter main loop
+    root.mainloop()

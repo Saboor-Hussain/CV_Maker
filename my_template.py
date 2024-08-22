@@ -112,3 +112,4 @@ languages_content = tk.Label(frame, text=languages_text, font=small_font, fg="bl
 languages_content.place(x=50, y=800)
 
 window.mainloop()
+
